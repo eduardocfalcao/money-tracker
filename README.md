@@ -1,1 +1,1 @@
-# money-tracker
+# Money Tracker
