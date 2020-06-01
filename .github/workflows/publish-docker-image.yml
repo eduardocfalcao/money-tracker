@@ -13,8 +13,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Check out code
 
-      - uses:  elgohr/Publish-Docker-Github-Action@master
-      - name: Build & push Docker image
+      - uses: elgohr/Publish-Docker-Github-Action@master
+      - name: Build and push Docker image
       with:
         image: eduardocfalcao/money-tracker
         tag: latest
