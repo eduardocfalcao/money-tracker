@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Check out code
-
-      - uses: elgohr/Publish-Docker-Github-Action@master
-      - name: Build and push Docker image
+    - name: Check out code
+    - uses: actions/checkout@v2
+      
+    - name: Build and push Docker image
+      uses: elgohr/Publish-Docker-Github-Action@master
       with:
         image: eduardocfalcao/money-tracker
         tag: latest
