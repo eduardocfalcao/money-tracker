@@ -1,0 +1,19 @@
+name: Docker
+
+on:
+    push:
+      branches: [ master, "release/*" ]
+
+jobs:
+    steps:
+        - uses: actions/checkout@v1.0
+        name: Check out code
+    
+        - uses: mr-smithers-excellent/docker-build-push@v3
+        name: Build & push Docker image
+        with:
+            image: eduardocfalcao/money-tracker
+            tag: latest
+            registry: ${{ secrets.DOCKER_REGISTRY }}
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
