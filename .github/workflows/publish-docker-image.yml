@@ -16,7 +16,7 @@ jobs:
     - name: Build and push Docker image
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        image: eduardocfalcao/money-tracker
+        name: eduardocfalcao/money-tracker
         tag: latest
         registry: ${{ secrets.DOCKER_REGISTRY }}
         username: ${{ secrets.DOCKER_USERNAME }}
