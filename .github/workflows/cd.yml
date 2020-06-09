@@ -35,7 +35,7 @@ jobs:
         run: export IngressNamespaceExists=`kubectl get namespaces | grep -c ingress-nginx`
       
       - uses: actions/kubectl@master
-          if: ${{ IngressNamespaceExists == 0 }}
+          if: IngressNamespaceExists == 0
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         run: |
