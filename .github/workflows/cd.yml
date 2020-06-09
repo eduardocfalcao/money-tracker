@@ -30,28 +30,28 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Creating Ingress deployment
-        uses: actions/kubectl@master
+        uses: actions/kubectl@v1.1.0
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         with:
           args: apply -f ./.k8s/ingress-deployment.yaml
           
       - name: Creating Ingress Service
-        uses: actions/kubectl@master
+        uses: actions/kubectl@v1.1.0
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         with:
           args: apply -f ./.k8s/ingress-service.yaml
 
       - name: Applying the application deployment
-        uses: actions-hub/kubectl@master
+        uses: actions-hub/kubectl@v1.1.0
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         with:
           args: apply -f ./.k8s/deployment.yml
       
       - name: Appying the ingress resources configuration.
-        uses: actions-hub/kubectl@master
+        uses: actions-hub/kubectl@v1.1.0
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         with:
