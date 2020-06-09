@@ -1,0 +1,32 @@
+# Define load balance
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: money-tracker-deployment
+spec:
+  selector:
+    matchLabels:
+      name: money-tracker-webapi
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        name: money-tracker-webapi
+    spec:
+      containers:
+        - name: money-tracker-app
+          image: 407503916287.dkr.ecr.us-east-2.amazonaws.com/money-tracker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: money-tracker-service
+  labels:
+    app: money-tracker
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP
+  selector:
+    name: money-tracker-webapi
