@@ -40,7 +40,7 @@ jobs:
         id: ingress-namespace-check
         uses: Consensys/kubernetes-action@master
         with:
-          args: get namespaces | grep ingress-nginx | wc -l
+          args: get namespaces | grep ingress-nginx | wc --lines
       
       - name: Creating Ingress deployment
         if: steps.ingress-namespace-check.outputs.result == 0
