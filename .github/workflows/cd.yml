@@ -40,10 +40,10 @@ jobs:
         id: ingress-namespace-check
         uses: Consensys/kubernetes-action@master
         with:
-          args: get namespaces | grep ingress-nginx | wc --lines
+          args: get namespaces | grep ingress-nginx
       
       - name: Creating Ingress deployment
-        if: steps.ingress-namespace-check.outputs.result == 0
+        if: ${{ !steps.ingress-namespace-check.outputs.result }}
         uses: Consensys/kubernetes-action@master
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
@@ -51,7 +51,7 @@ jobs:
           args: apply -f ./.k8s/ingress-deployment.yaml
           
       - name: Creating Ingress Service
-        if: steps.ingress-namespace-check.outputs.result == 0
+        if: ${{ !steps.ingress-namespace-check.outputs.result }}
         uses: Consensys/kubernetes-action@master
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
