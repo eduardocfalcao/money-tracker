@@ -5,8 +5,7 @@ on:
     branches: [ master, "release/*" ]
 
 jobs:
-  build:
-        # The type of runner that the job will run on
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,10 +13,12 @@ jobs:
       uses: actions/checkout@v2
       
     - name: Build and push Docker image
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: kciter/aws-ecr-action@v1
       with:
-        name: eduardocfalcao/money-tracker
-        tag: latest
-        registry: ${{ secrets.DOCKER_REGISTRY }}
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        repo: money-tracker
+        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+        region: us-east-2
+        tags: latest,${{ github.sha }}
+        create_repo: true
