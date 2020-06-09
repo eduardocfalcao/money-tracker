@@ -42,7 +42,7 @@ jobs:
         with:
           args: get namespaces | grep ingress-nginx
       
-      - name: Creating Ingress deployment
+      - name: Creating Ingress Deployment
         if: ${{ !steps.ingress-namespace-check.outputs.result }}
         uses: Consensys/kubernetes-action@master
         env:
