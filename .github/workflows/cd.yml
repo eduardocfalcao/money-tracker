@@ -52,9 +52,7 @@ jobs:
 
       - uses: Azure/k8s-deploy@v1
         with:
-          manifests: |
-            ./.k8s/deployment.yml
-            ./.k8s/ingress-resources.yaml
+          manifests: ./.k8s/deployment.yml
           images: |
             crfalcao.azurecr.io/money-tracker:${{ github.sha }}
           imagepullsecrets: |
