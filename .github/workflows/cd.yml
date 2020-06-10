@@ -45,6 +45,7 @@ jobs:
       - uses: Azure/k8s-deploy@v1
         if: steps.ingress.output.ingress_exists == 0
         with:
+          namespace: ingress-nginx
           manifests: |
             ./.k8s/ingress-deployment.yaml
             ./.k8s/ingress-service.yaml
