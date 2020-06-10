@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: money-tracker-app
-          image: 407503916287.dkr.ecr.us-east-2.amazonaws.com/money-tracker
+          image: 407503916287.dkr.ecr.us-east-2.amazonaws.com/money-tracker:latest
+          imagePullPolicy: Always
 ---
 apiVersion: v1
 kind: Service
