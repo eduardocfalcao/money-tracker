@@ -36,7 +36,7 @@ jobs:
         run: echo ::set-output name=ingress_exists::$(kubectl get namespaces | grep ingress-nginx | wc -l)
 
       - name: Test output
-        run: echo steps.ingress.output.ingress_exists
+        run: echo "${{ steps.ingress.outputs.ingress_exists}}"
 
       - uses: Azure/k8s-create-secret@v1
         with:
@@ -47,7 +47,7 @@ jobs:
       
       - name: Ingress deployment
         uses: Azure/k8s-deploy@v1
-        if: steps.ingress.output.ingress_exists == 0
+        if: steps.ingress.outputs.ingress_exists == 0
         with:
           namespace: ingress-nginx
           manifests: |
