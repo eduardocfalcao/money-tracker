@@ -14,24 +14,7 @@ spec:
     spec:
       containers:
         - name: money-tracker-app
-          image: crfalcao.azurecr.io/money-tracker:latest
-          imagePullPolicy: Always
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-  namespace: default
-  name: ingress-router
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /money-tracker(/|$)(.*)
-        backend:
-          serviceName: money-tracker-service
-          servicePort: 8080
+          image: crfalcao.azurecr.io/money-tracker
 ---
 apiVersion: v1
 kind: Service
