@@ -14,7 +14,10 @@ spec:
     spec:
       containers:
         - name: money-tracker-app
-          image: crfalcao.azurecr.io/money-tracker
+          image: crfalcao.azurecr.io/money-tracker:latest
+          envFrom:
+          - configMapRef:
+              name: app-settings
 ---
 apiVersion: v1
 kind: Service
