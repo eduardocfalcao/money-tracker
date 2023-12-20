@@ -1,4 +1,4 @@
-package handlers
+package healthcheck
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 
 type status struct {
 	Health string `json:"health"`
-	Host   string `json:host`
+	Host   string `json:"host"`
 }
 
 // Healthcheck is a handler to return the status of the service

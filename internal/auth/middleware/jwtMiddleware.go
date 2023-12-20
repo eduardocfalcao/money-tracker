@@ -6,7 +6,7 @@ import (
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/eduardocfalcao/money-tracker/http/auth"
+	"github.com/eduardocfalcao/money-tracker/auth"
 )
 
 func CreateMiddleware() *jwtmiddleware.JWTMiddleware {

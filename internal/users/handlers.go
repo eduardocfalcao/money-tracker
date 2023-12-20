@@ -1,19 +1,25 @@
-package info
+package users
 
 import (
 	"encoding/json"
 	"net/http"
 	"strings"
 
-	"github.com/eduardocfalcao/money-tracker/http/auth/middleware/jwtParser"
+	"github.com/eduardocfalcao/money-tracker/internal/auth/middleware/jwtParser"
 )
+
+type Handlers struct{}
+
+func NewHandler() *Handlers {
+	return &Handlers{}
+}
 
 type MeData struct {
 	Name  string `json:name`
 	Email string `json:email`
 }
 
-func Me(w http.ResponseWriter, r *http.Request) {
+func (u *Handlers) Me(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 
 	authHeaderParts := strings.Split(r.Header.Get("Authorization"), " ")

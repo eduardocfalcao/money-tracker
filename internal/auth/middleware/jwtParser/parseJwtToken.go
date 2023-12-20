@@ -2,7 +2,7 @@ package jwtParser
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/eduardocfalcao/money-tracker/http/auth"
+	"github.com/eduardocfalcao/money-tracker/auth"
 )
 
 type CustomClaims struct {
