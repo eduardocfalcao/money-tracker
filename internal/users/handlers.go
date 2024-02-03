@@ -5,27 +5,58 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/eduardocfalcao/money-tracker/internal/api"
+	"github.com/eduardocfalcao/money-tracker/internal/auth"
 	"github.com/eduardocfalcao/money-tracker/internal/auth/middleware/jwtParser"
+	"github.com/eduardocfalcao/money-tracker/internal/users/models"
+	"github.com/sirupsen/logrus"
 )
 
-type Handlers struct{}
-
-func NewHandler() *Handlers {
-	return &Handlers{}
+type Handlers struct {
+	auth.JWTService
 }
 
-type MeData struct {
-	Name  string `json:name`
-	Email string `json:email`
+func NewHandler(jwtService auth.JWTService) *Handlers {
+	return &Handlers{JWTService: jwtService}
 }
 
 func (u *Handlers) Me(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "application/json")
-
 	authHeaderParts := strings.Split(r.Header.Get("Authorization"), " ")
 	token := jwtParser.Parse(authHeaderParts[1])
 
 	claims, _ := token.Claims.(*jwtParser.CustomClaims)
 
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(claims)
+}
+
+// temp soliution: The final solution must be an oauth kind authentication,
+// with better security schema
+func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	var loginRequest models.LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&loginRequest); err != nil {
+		logrus.Warnf("[user handler] Login request endpoint received a malformed json: %s", err)
+		api.MalformedJsonResponse(w)
+	}
+
+	if loginRequest.Email == "eduardo.cfalcao@gmail.com" && loginRequest.Password == "123" {
+		token, err := h.JWTService.CreateToken(auth.CreateTokenArgs{
+			Username: loginRequest.Email,
+			Email:    loginRequest.Email,
+		})
+		if err != nil {
+			logrus.Errorf("[user handler] Error generating the user token: %s", err)
+			api.InternalErrorResponse(w)
+			return
+		}
+
+		api.JsonResponse(w, token)
+	} else {
+		api.WriteApiError(w, http.StatusUnauthorized, api.APIError{
+			Message: "There is no user with the given email and password.",
+		})
+	}
 }

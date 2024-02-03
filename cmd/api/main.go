@@ -11,26 +11,27 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/eduardocfalcao/money-tracker/internal/container"
 	"github.com/eduardocfalcao/money-tracker/internal/healthcheck"
 	"github.com/eduardocfalcao/money-tracker/internal/users"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/sirupsen/logrus"
-	// authMiddleware "github.com/eduardocfalcao/money-tracker/server/auth/middleware"
 )
 
-type handlers struct {
-	users users.Handlers
+type router interface {
+	RegisterRoutes(router chi.Router, privateRoutes chi.Router)
 }
 
 func main() {
 	serverPort := 8080
 	router := chi.NewRouter()
+	secretKey := "secret-key" // load the key from somewhere
 
-	// authenticationMiddleware := authMiddleware.CreateMiddleware()
-
-	handlers := handlers{
-		users: *users.NewHandler(),
+	c, err := container.NewContainer(secretKey)
+	if err != nil {
+		logrus.Errorf("Error creating the container to start the application: %s", err)
+		return
 	}
 
 	router.Use(middleware.Logger)
@@ -41,15 +42,22 @@ func main() {
 		ReadTimeout: 30 * time.Second,
 	}
 
-	registerRoutes(router, handlers)
+	privateRouter := router.With(c.JWTMiddlewareService.VerifyTokenMiddleware)
+	registerRoutes(router, privateRouter, c)
 
 	Start(server)
 }
 
-func registerRoutes(r *chi.Mux, handlers handlers) {
+func registerRoutes(r chi.Router, privateRouter chi.Router, c *container.Container) {
+	//public routes
 	r.Get("/healthcheck", healthcheck.Healthcheck)
-
-	r.Get("/users/me", handlers.users.Me)
+	routers := []router{
+		users.NewRoutes(c.UsersHanders),
+	}
+	// private routes
+	for _, router := range routers {
+		router.RegisterRoutes(r, privateRouter)
+	}
 }
 
 func Start(server *http.Server) {
