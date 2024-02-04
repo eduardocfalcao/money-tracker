@@ -1,5 +1,6 @@
 run:
 	go run cmd/api/main.go
+
 deploy-cluster:
 	kubectl apply -f ./.k8s/ingress-deployment.yaml
 	kubectl apply -f ./.k8s/ingress-service.yaml
