@@ -7,8 +7,8 @@ import (
 
 	"github.com/eduardocfalcao/money-tracker/internal/api"
 	"github.com/eduardocfalcao/money-tracker/internal/auth"
-	"github.com/eduardocfalcao/money-tracker/internal/auth/middleware/jwtParser"
 	"github.com/eduardocfalcao/money-tracker/internal/users/models"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 )
 
@@ -22,9 +22,13 @@ func NewHandler(jwtService auth.JWTService) *Handlers {
 
 func (u *Handlers) Me(w http.ResponseWriter, r *http.Request) {
 	authHeaderParts := strings.Split(r.Header.Get("Authorization"), " ")
-	token := jwtParser.Parse(authHeaderParts[1])
-
-	claims, _ := token.Claims.(*jwtParser.CustomClaims)
+	token, err := u.JWTService.ParseToken(authHeaderParts[1])
+	if err != nil {
+		logrus.Errorf("[user handler] Error parsing the user token: %s", err)
+		api.InternalErrorResponse(w)
+		return
+	}
+	claims, _ := token.Claims.(jwt.MapClaims)
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)

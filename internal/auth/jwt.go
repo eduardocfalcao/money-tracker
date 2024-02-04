@@ -28,6 +28,7 @@ type (
 type JWTService interface {
 	CreateToken(args CreateTokenArgs) (string, error)
 	VerifyToken(tokenString string) error
+	ParseToken(tokenString string) (*jwt.Token, error)
 }
 
 type JWTMiddlewareService interface {
@@ -70,4 +71,14 @@ func (j *service) VerifyToken(tokenString string) error {
 	}
 
 	return nil
+}
+
+func (j *service) ParseToken(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return j.SecretKey, nil // combine the secret key with some
+	})
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
 }
