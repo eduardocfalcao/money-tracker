@@ -1,6 +1,22 @@
 run:
 	go run cmd/api/main.go
 
+new-migration: 
+	migrate create -ext sql -dir ./database/migrations -seq ${name}
+
+db_url ?= "postgres://postgres:12345678a@localhost:5433/money-tracker?sslmode=disable"
+run-migrations:
+	migrate -verbose -database ${db_url} -path ./database/migrations up
+
+start-postgres:
+	docker run --name money-tracker -e POSTGRES_PASSWORD=12345678a -e POSTGRES_DB=money-tracker -p 5433:5432 -v ./.pgdata:/var/lib/postgresql/data -d postgres
+
+drop-database:
+	migrate -database ${db_url} -path ./database/migrations drop
+
+down-database:
+	migrate -database ${db_url} -path ./database/migrations down ${n}
+
 deploy-cluster:
 	kubectl apply -f ./.k8s/ingress-deployment.yaml
 	kubectl apply -f ./.k8s/ingress-service.yaml

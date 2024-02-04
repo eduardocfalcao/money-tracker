@@ -9,3 +9,8 @@ Some of the things I will do in this project:
 5. Create the CD process to deploy the application to a cloud system (Azure or AWS)
 
 
+## Tools needed to run makefile commands:
+
+ - Docker
+ - [Migrate](https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md)
+ - [SQLC](https://github.com/sqlc-dev/sqlc)
