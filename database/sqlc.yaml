@@ -1,13 +1,13 @@
 version: "2"
 sql:
   - engine: "postgresql"
-    name: "Users queries"
-    queries: "../internal/users/repository/queries.sql"
+    name: "Raw transactions queries"
+    queries: "../internal/raw_transactions/repository/queries.sql"
     schema: "migrations"
     gen:
       go:
-        package: "repositoy"
-        out: "../internal/users/repository"
+        package: "repository"
+        out: "../internal/raw_transactions/repository"
         output_models_file_name: "entities.go"
         # output_querier_file_name: "repository.go"
         # emit_interface: true

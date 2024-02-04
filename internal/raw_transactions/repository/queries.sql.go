@@ -3,7 +3,7 @@
 //   sqlc v1.25.0
 // source: queries.sql
 
-package repositoy
+package repository
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 )
 
 const get = `-- name: Get :one
-SELECT id, account_id, data_posted, transaction_amount, fit_id, checknum, memo FROM raw_transactions
+SELECT id, account_id, date_posted, transaction_amount, fit_id, checknum, memo FROM raw_transactions
 WHERE id = $1 LIMIT 1
 `
 
@@ -22,7 +22,7 @@ func (q *Queries) Get(ctx context.Context, id pgtype.UUID) (RawTransaction, erro
 	err := row.Scan(
 		&i.ID,
 		&i.AccountID,
-		&i.DataPosted,
+		&i.DatePosted,
 		&i.TransactionAmount,
 		&i.FitID,
 		&i.Checknum,

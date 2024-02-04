@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.25.0
 
-package repositoy
+package repository
 
 import (
 	"github.com/jackc/pgx/v5/pgtype"
@@ -11,7 +11,7 @@ import (
 type RawTransaction struct {
 	ID                pgtype.UUID      `db:"id" json:"id"`
 	AccountID         pgtype.Text      `db:"account_id" json:"accountId"`
-	DataPosted        pgtype.Timestamp `db:"data_posted" json:"dataPosted"`
+	DatePosted        pgtype.Timestamp `db:"date_posted" json:"datePosted"`
 	TransactionAmount pgtype.Numeric   `db:"transaction_amount" json:"transactionAmount"`
 	FitID             int32            `db:"fit_id" json:"fitId"`
 	Checknum          string           `db:"checknum" json:"checknum"`
