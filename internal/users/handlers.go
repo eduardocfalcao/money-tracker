@@ -29,10 +29,7 @@ func (u *Handlers) Me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	claims, _ := token.Claims.(jwt.MapClaims)
-
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(claims)
+	api.JsonResponse(w, claims)
 }
 
 // temp soliution: The final solution must be an oauth kind authentication,
