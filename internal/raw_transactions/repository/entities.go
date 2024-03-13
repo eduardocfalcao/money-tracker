@@ -17,3 +17,12 @@ type RawTransaction struct {
 	Checknum          string           `db:"checknum" json:"checknum"`
 	Memo              string           `db:"memo" json:"memo"`
 }
+
+type User struct {
+	ID           pgtype.UUID      `db:"id" json:"id"`
+	CreatedAt    pgtype.Timestamp `db:"created_at" json:"createdAt"`
+	Name         string           `db:"name" json:"name"`
+	Email        string           `db:"email" json:"email"`
+	Passwordhash string           `db:"passwordhash" json:"passwordhash"`
+	Salt         string           `db:"salt" json:"salt"`
+}

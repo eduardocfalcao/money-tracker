@@ -12,7 +12,7 @@ run-migrations:
 	migrate -verbose -database ${db_url} -path ./database/migrations up
 
 start-postgres:
-	docker run --name money-tracker -e POSTGRES_PASSWORD=12345678a -e POSTGRES_DB=money-tracker -p 5433:5432 -v ./.pgdata:/var/lib/postgresql/data -d postgres
+	docker run --name money-tracker -e POSTGRES_PASSWORD=12345678a -e POSTGRES_DB=money-tracker -p 5433:5432 -v ./.pgdata:/var/lib/postgresql/data -d postgres:15
 
 drop-database:
 	migrate -database ${db_url} -path ./database/migrations drop
