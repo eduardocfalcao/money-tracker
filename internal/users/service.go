@@ -4,7 +4,10 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha512"
+	"database/sql"
 	"encoding/hex"
+	"errors"
+	"fmt"
 
 	"github.com/eduardocfalcao/money-tracker/database/queries"
 	"github.com/eduardocfalcao/money-tracker/internal/users/models"
@@ -14,8 +17,13 @@ const (
 	saltSize = 16
 )
 
+var (
+	ErrNotFound = errors.New("not found in database")
+)
+
 type UsersService interface {
 	CreateUser(ctx context.Context, userRequest models.CreateUserRequest) error
+	GetUserByEmailAndPassword(ctx context.Context, userInfo models.LoginRequest) (queries.User, error)
 }
 
 type service struct {
@@ -38,6 +46,23 @@ func (s *service) CreateUser(ctx context.Context, userRequest models.CreateUserR
 	}
 
 	return s.Repository.CreateUser(ctx, params)
+}
+
+func (s *service) GetUserByEmailAndPassword(ctx context.Context, userInfo models.LoginRequest) (queries.User, error) {
+	user, err := s.Repository.GetUserByEmail(ctx, userInfo.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return queries.User{}, fmt.Errorf("error on GetUserByEmail query: %w", ErrNotFound)
+		}
+		return queries.User{}, err
+	}
+
+	if checkPassword(user.Passwordhash, userInfo.Password, []byte(user.Salt)) {
+		return user, nil
+	}
+
+	//TODO: maybe change to some another error type?
+	return queries.User{}, fmt.Errorf("error on GetUserByEmail query: %w", ErrNotFound)
 }
 
 func generateRandomSalt(saltSize int) []byte {

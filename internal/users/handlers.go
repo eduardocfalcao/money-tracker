@@ -2,6 +2,7 @@ package users
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -42,25 +43,33 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&loginRequest); err != nil {
 		logrus.Warnf("[user handler] Login endpoint received a malformed json: %s", err)
 		api.MalformedJsonResponse(w)
+		return
 	}
 
-	if loginRequest.Email == "eduardo.cfalcao@gmail.com" && loginRequest.Password == "123" {
-		token, err := h.JWTService.CreateToken(auth.CreateTokenArgs{
-			Username: loginRequest.Email,
-			Email:    loginRequest.Email,
-		})
-		if err != nil {
-			logrus.Errorf("[user handler] Error generating the user token: %s", err)
-			api.InternalErrorResponse(w)
+	user, err := h.service.GetUserByEmailAndPassword(r.Context(), loginRequest)
+	if err != nil {
+		if errors.Is(err, ErrNotFound) {
+			api.WriteApiError(w, http.StatusUnauthorized, api.APIError{
+				Message: "There is no user with the given email and password.",
+			})
 			return
 		}
-
-		api.JsonResponse(w, token)
-	} else {
-		api.WriteApiError(w, http.StatusUnauthorized, api.APIError{
-			Message: "There is no user with the given email and password.",
-		})
+		logrus.Errorf("[user handler] Error retrieving user to login: %s", err)
+		api.InternalErrorResponse(w)
+		return
 	}
+
+	token, err := h.JWTService.CreateToken(auth.CreateTokenArgs{
+		Username: user.Email,
+		Email:    user.Email,
+	})
+	if err != nil {
+		logrus.Errorf("[user handler] Error generating the user token: %s", err)
+		api.InternalErrorResponse(w)
+		return
+	}
+
+	api.JsonResponse(w, token)
 }
 
 func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -69,11 +78,14 @@ func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		logrus.Warnf("[user handler] Create user endpoint received a malformed json: %s", err)
 		api.MalformedJsonResponse(w)
+		return
 	}
 
 	err := h.service.CreateUser(r.Context(), request)
 	if err != nil {
 		logrus.Errorf("[user handler] Error creating the user: %s", err)
 		api.InternalErrorResponse(w)
+		return
 	}
+	w.WriteHeader(http.StatusCreated)
 }

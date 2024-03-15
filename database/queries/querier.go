@@ -14,6 +14,7 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) error
 	GetRawTransaction(ctx context.Context, id pgtype.UUID) (RawTransaction, error)
 	GetUser(ctx context.Context, id pgtype.UUID) (User, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
 	ListUsers(ctx context.Context) ([]User, error)
 	SearchUsers(ctx context.Context, name string) ([]User, error)
 }
