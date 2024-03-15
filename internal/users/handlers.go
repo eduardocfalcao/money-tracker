@@ -14,6 +14,7 @@ import (
 
 type Handlers struct {
 	auth.JWTService
+	service service
 }
 
 func NewHandler(jwtService auth.JWTService) *Handlers {
@@ -39,7 +40,7 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 
 	var loginRequest models.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&loginRequest); err != nil {
-		logrus.Warnf("[user handler] Login request endpoint received a malformed json: %s", err)
+		logrus.Warnf("[user handler] Login endpoint received a malformed json: %s", err)
 		api.MalformedJsonResponse(w)
 	}
 
@@ -59,5 +60,20 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 		api.WriteApiError(w, http.StatusUnauthorized, api.APIError{
 			Message: "There is no user with the given email and password.",
 		})
+	}
+}
+
+func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
+
+	var request models.CreateUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		logrus.Warnf("[user handler] Create user endpoint received a malformed json: %s", err)
+		api.MalformedJsonResponse(w)
+	}
+
+	err := h.service.CreateUser(r.Context(), request)
+	if err != nil {
+		logrus.Errorf("[user handler] Error creating the user: %s", err)
+		api.InternalErrorResponse(w)
 	}
 }

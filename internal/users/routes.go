@@ -12,6 +12,7 @@ func NewRoutes(h *Handlers) *userRouter {
 
 func (u *userRouter) RegisterRoutes(router chi.Router, privateRoutes chi.Router) {
 	router.Post("/oauth/token", u.handlers.Login)
+	router.Post("/users", u.handlers.CreateUser)
 
 	//private routes
 	privateRoutes.Get("/users/me", u.handlers.Me)
