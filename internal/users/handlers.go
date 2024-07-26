@@ -15,11 +15,14 @@ import (
 
 type Handlers struct {
 	auth.JWTService
-	service service
+	service *service
 }
 
-func NewHandler(jwtService auth.JWTService) *Handlers {
-	return &Handlers{JWTService: jwtService}
+func NewHandler(jwtService auth.JWTService, s *service) *Handlers {
+	return &Handlers{
+		JWTService: jwtService,
+		service:    s,
+	}
 }
 
 func (u *Handlers) Me(w http.ResponseWriter, r *http.Request) {
@@ -73,11 +76,15 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) CreateUser(w http.ResponseWriter, r *http.Request) {
-
 	var request models.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		logrus.Warnf("[user handler] Create user endpoint received a malformed json: %s", err)
 		api.MalformedJsonResponse(w)
+		return
+	}
+
+	if err := request.Validate(); err != nil {
+		api.BadRequestResponse(w, err.Error())
 		return
 	}
 

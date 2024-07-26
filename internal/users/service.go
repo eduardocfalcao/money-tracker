@@ -7,19 +7,18 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"errors"
-	"fmt"
+	"io"
 
 	"github.com/eduardocfalcao/money-tracker/database/queries"
 	"github.com/eduardocfalcao/money-tracker/internal/users/models"
+	"github.com/sirupsen/logrus"
 )
 
 const (
 	saltSize = 16
 )
 
-var (
-	ErrNotFound = errors.New("not found in database")
-)
+var ErrNotFound = errors.New("not found in database")
 
 type UsersService interface {
 	CreateUser(ctx context.Context, userRequest models.CreateUserRequest) error
@@ -38,11 +37,13 @@ func NewService(repository queries.QuerierTx) *service {
 
 func (s *service) CreateUser(ctx context.Context, userRequest models.CreateUserRequest) error {
 	salt := generateRandomSalt(saltSize)
+	saltString := hex.EncodeToString(salt)
+	logrus.Info(len(saltString))
 	params := queries.CreateUserParams{
 		Name:         userRequest.Name,
 		Email:        userRequest.Email,
 		Passwordhash: hashPassword(userRequest.Password, salt),
-		Salt:         string(salt),
+		Salt:         saltString,
 	}
 
 	return s.Repository.CreateUser(ctx, params)
@@ -52,7 +53,7 @@ func (s *service) GetUserByEmailAndPassword(ctx context.Context, userInfo models
 	user, err := s.Repository.GetUserByEmail(ctx, userInfo.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return queries.User{}, fmt.Errorf("error on GetUserByEmail query: %w", ErrNotFound)
+			return queries.User{}, models.ErrUserNotFoundOrWrongPassword
 		}
 		return queries.User{}, err
 	}
@@ -61,15 +62,13 @@ func (s *service) GetUserByEmailAndPassword(ctx context.Context, userInfo models
 		return user, nil
 	}
 
-	//TODO: maybe change to some another error type?
-	return queries.User{}, fmt.Errorf("error on GetUserByEmail query: %w", ErrNotFound)
+	return queries.User{}, models.ErrUserNotFoundOrWrongPassword
 }
 
 func generateRandomSalt(saltSize int) []byte {
-	var salt = make([]byte, saltSize)
+	salt := make([]byte, saltSize)
 
-	_, err := rand.Read(salt[:])
-
+	_, err := io.ReadFull(rand.Reader, salt)
 	if err != nil {
 		panic(err)
 	}
@@ -79,10 +78,10 @@ func generateRandomSalt(saltSize int) []byte {
 
 func hashPassword(password string, salt []byte) string {
 	// Convert password string to byte slice
-	var passwordBytes = []byte(password)
+	passwordBytes := []byte(password)
 
 	// Create sha-512 hasher
-	var sha512Hasher = sha512.New()
+	sha512Hasher := sha512.New()
 
 	// Append salt to password
 	passwordBytes = append(passwordBytes, salt...)
@@ -91,17 +90,18 @@ func hashPassword(password string, salt []byte) string {
 	sha512Hasher.Write(passwordBytes)
 
 	// Get the SHA-512 hashed password
-	var hashedPasswordBytes = sha512Hasher.Sum(nil)
+	hashedPasswordBytes := sha512Hasher.Sum(nil)
 
 	// Convert the hashed password to a hex string
-	var hashedPasswordHex = hex.EncodeToString(hashedPasswordBytes)
+	hashedPasswordHex := hex.EncodeToString(hashedPasswordBytes)
 
 	return hashedPasswordHex
 }
 
 func checkPassword(hashedPassword, currPassword string,
-	salt []byte) bool {
-	var currPasswordHash = hashPassword(currPassword, salt)
+	salt []byte,
+) bool {
+	currPasswordHash := hashPassword(currPassword, salt)
 
 	return hashedPassword == currPasswordHash
 }

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS raw_transactions (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY, 
+  id SERIAL PRIMARY KEY, 
   account_id varchar(20),
   date_posted timestamp NOT NULL, 
   transaction_amount money NOT NULL, 

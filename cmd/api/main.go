@@ -16,6 +16,7 @@ import (
 	"github.com/eduardocfalcao/money-tracker/internal/users"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,8 +28,15 @@ func main() {
 	serverPort := 8080
 	router := chi.NewRouter()
 	secretKey := "secret-key" // load the key from somewhere
+	ctx := context.Background()
 
-	c, err := container.NewContainer(secretKey)
+	conn, err := pgx.Connect(ctx, "postgres://postgres:12345678a@localhost:5433/money-tracker?sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close(ctx)
+
+	c, err := container.NewContainer(secretKey, conn)
 	if err != nil {
 		logrus.Errorf("Error creating the container to start the application: %s", err)
 		return
@@ -49,7 +57,7 @@ func main() {
 }
 
 func registerRoutes(r chi.Router, privateRouter chi.Router, c *container.Container) {
-	//public routes
+	// public routes
 	r.Get("/healthcheck", healthcheck.Healthcheck)
 	routers := []router{
 		users.NewRoutes(c.UsersHanders),

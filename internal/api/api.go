@@ -4,11 +4,6 @@ import (
 	"net/http"
 )
 
-type APIError struct {
-	Message string      `json:"message"`
-	Details interface{} `json:"details,omitempty"`
-}
-
 func UnauthorizedResponse(w http.ResponseWriter) {
 	WriteApiError(w, http.StatusUnauthorized, APIError{
 		Message: "Unauthorized request.",

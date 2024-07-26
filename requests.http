@@ -1,1 +1,13 @@
 GET  http://localhost:8080/healthcheck
+
+###
+
+POST  http://localhost:8080/users
+content-type: application/json
+
+{
+    "email": "eduardo.cfalcao@gmail.com",
+    "name": "Eduardo",
+    "password": "123456",
+    "confirmPassword": "123456"
+}
