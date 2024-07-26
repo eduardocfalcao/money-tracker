@@ -7,8 +7,6 @@ package queries
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const getRawTransaction = `-- name: GetRawTransaction :one
@@ -16,7 +14,7 @@ SELECT id, account_id, date_posted, transaction_amount, fit_id, checknum, memo F
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetRawTransaction(ctx context.Context, id pgtype.UUID) (RawTransaction, error) {
+func (q *Queries) GetRawTransaction(ctx context.Context, id int32) (RawTransaction, error) {
 	row := q.db.QueryRow(ctx, getRawTransaction, id)
 	var i RawTransaction
 	err := row.Scan(

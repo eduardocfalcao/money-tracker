@@ -11,7 +11,6 @@ import (
 
 	"github.com/eduardocfalcao/money-tracker/database/queries"
 	"github.com/eduardocfalcao/money-tracker/internal/users/models"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -38,7 +37,7 @@ func NewService(repository queries.QuerierTx) *service {
 func (s *service) CreateUser(ctx context.Context, userRequest models.CreateUserRequest) error {
 	salt := generateRandomSalt(saltSize)
 	saltString := hex.EncodeToString(salt)
-	logrus.Info(len(saltString))
+
 	params := queries.CreateUserParams{
 		Name:         userRequest.Name,
 		Email:        userRequest.Email,

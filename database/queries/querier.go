@@ -6,14 +6,12 @@ package queries
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) error
-	GetRawTransaction(ctx context.Context, id pgtype.UUID) (RawTransaction, error)
-	GetUser(ctx context.Context, id pgtype.UUID) (User, error)
+	GetRawTransaction(ctx context.Context, id int32) (RawTransaction, error)
+	GetUser(ctx context.Context, id int32) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	ListUsers(ctx context.Context) ([]User, error)
 	SearchUsers(ctx context.Context, name string) ([]User, error)

@@ -23,4 +23,11 @@ func Test_Create(t *testing.T) {
 		ConfirmPassword: "123456",
 	})
 	require.Nil(t, err)
+
+	users, err := stage.Repository.ListUsers(ctx)
+
+	require.Nil(t, err)
+	require.Len(t, users, 1)
+	require.Equal(t, "Test User Name", users[0].Name)
+	require.Equal(t, "user@test.com", users[0].Email)
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type RawTransaction struct {
-	ID                pgtype.UUID      `db:"id" json:"id"`
+	ID                int32            `db:"id" json:"id"`
 	AccountID         pgtype.Text      `db:"account_id" json:"accountId"`
 	DatePosted        pgtype.Timestamp `db:"date_posted" json:"datePosted"`
 	TransactionAmount pgtype.Numeric   `db:"transaction_amount" json:"transactionAmount"`
@@ -19,7 +19,7 @@ type RawTransaction struct {
 }
 
 type User struct {
-	ID           pgtype.UUID      `db:"id" json:"id"`
+	ID           int32            `db:"id" json:"id"`
 	CreatedAt    pgtype.Timestamp `db:"created_at" json:"createdAt"`
 	Name         string           `db:"name" json:"name"`
 	Email        string           `db:"email" json:"email"`
