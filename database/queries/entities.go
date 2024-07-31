@@ -8,14 +8,28 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Category struct {
+	ID      int32  `db:"id" json:"id"`
+	UserID  int32  `db:"user_id" json:"userId"`
+	Name    string `db:"name" json:"name"`
+	Enabled bool   `db:"enabled" json:"enabled"`
+}
+
 type RawTransaction struct {
 	ID                int32            `db:"id" json:"id"`
+	UserID            int32            `db:"user_id" json:"userId"`
 	AccountID         pgtype.Text      `db:"account_id" json:"accountId"`
 	DatePosted        pgtype.Timestamp `db:"date_posted" json:"datePosted"`
 	TransactionAmount pgtype.Numeric   `db:"transaction_amount" json:"transactionAmount"`
-	FitID             int32            `db:"fit_id" json:"fitId"`
-	Checknum          string           `db:"checknum" json:"checknum"`
-	Memo              string           `db:"memo" json:"memo"`
+	FitID             pgtype.Int4      `db:"fit_id" json:"fitId"`
+	Checknum          pgtype.Text      `db:"checknum" json:"checknum"`
+	Memo              pgtype.Text      `db:"memo" json:"memo"`
+	Description       pgtype.Text      `db:"description" json:"description"`
+}
+
+type RawTransactionsCategory struct {
+	RawTransactionID int32 `db:"raw_transaction_id" json:"rawTransactionId"`
+	CategoryID       int32 `db:"category_id" json:"categoryId"`
 }
 
 type User struct {
