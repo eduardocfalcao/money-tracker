@@ -20,7 +20,7 @@ func Test_ImportOFXFile(t *testing.T) {
 	sut := transactions.NewService(stage.TransactionsRepository)
 
 	// load file
-	file, err := os.Open("testdata/test-1.ofx")
+	file, err := os.Open("testdata/test_1.ofx")
 	require.Nil(t, err)
 	defer file.Close()
 
