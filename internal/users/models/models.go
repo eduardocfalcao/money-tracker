@@ -1,6 +1,9 @@
 package models
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 var ErrUserNotFoundOrWrongPassword = errors.New("user not found or invalid password")
 
@@ -20,6 +23,15 @@ type (
 		Name            string `json:"name"`
 		Password        string `json:"password"`
 		ConfirmPassword string `json:"confirmPassword"`
+	}
+
+	User struct {
+		CreatedAt    time.Time `db:"created_at" json:"created_at"`
+		Name         string    `db:"name" json:"name"`
+		Email        string    `db:"email" json:"email"`
+		Passwordhash string    `db:"password_hash" json:"password_hash"`
+		Salt         string    `db:"salt" json:"salt"`
+		ID           int32     `db:"id" json:"id"`
 	}
 )
 

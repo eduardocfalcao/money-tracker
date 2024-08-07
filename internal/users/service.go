@@ -9,8 +9,8 @@ import (
 	"errors"
 	"io"
 
-	"github.com/eduardocfalcao/money-tracker/database/queries"
 	"github.com/eduardocfalcao/money-tracker/internal/users/models"
+	"github.com/eduardocfalcao/money-tracker/internal/users/repository"
 )
 
 const (
@@ -21,14 +21,14 @@ var ErrNotFound = errors.New("not found in database")
 
 type UsersService interface {
 	CreateUser(ctx context.Context, userRequest models.CreateUserRequest) error
-	GetUserByEmailAndPassword(ctx context.Context, userInfo models.LoginRequest) (queries.User, error)
+	GetUserByEmailAndPassword(ctx context.Context, userInfo models.LoginRequest) (models.User, error)
 }
 
 type service struct {
-	Repository queries.QuerierTx
+	Repository repository.Repository
 }
 
-func NewService(repository queries.QuerierTx) *service {
+func NewService(repository repository.Repository) *service {
 	return &service{
 		Repository: repository,
 	}
@@ -37,8 +37,7 @@ func NewService(repository queries.QuerierTx) *service {
 func (s *service) CreateUser(ctx context.Context, userRequest models.CreateUserRequest) error {
 	salt := generateRandomSalt(saltSize)
 	saltString := hex.EncodeToString(salt)
-
-	params := queries.CreateUserParams{
+	params := models.User{
 		Name:         userRequest.Name,
 		Email:        userRequest.Email,
 		Passwordhash: hashPassword(userRequest.Password, salt),
@@ -48,20 +47,20 @@ func (s *service) CreateUser(ctx context.Context, userRequest models.CreateUserR
 	return s.Repository.CreateUser(ctx, params)
 }
 
-func (s *service) GetUserByEmailAndPassword(ctx context.Context, userInfo models.LoginRequest) (queries.User, error) {
+func (s *service) GetUserByEmailAndPassword(ctx context.Context, userInfo models.LoginRequest) (models.User, error) {
 	user, err := s.Repository.GetUserByEmail(ctx, userInfo.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return queries.User{}, models.ErrUserNotFoundOrWrongPassword
+			return models.User{}, models.ErrUserNotFoundOrWrongPassword
 		}
-		return queries.User{}, err
+		return models.User{}, err
 	}
 
 	if checkPassword(user.Passwordhash, userInfo.Password, []byte(user.Salt)) {
 		return user, nil
 	}
 
-	return queries.User{}, models.ErrUserNotFoundOrWrongPassword
+	return models.User{}, models.ErrUserNotFoundOrWrongPassword
 }
 
 func generateRandomSalt(saltSize int) []byte {

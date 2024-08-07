@@ -14,7 +14,7 @@ func Test_Create(t *testing.T) {
 	ctx := context.Background()
 	stage := createTestStage()
 	defer stage.CleanUp(ctx)
-	sut := users.NewService(stage.Repository)
+	sut := users.NewService(stage.UsersRepository)
 
 	err := sut.CreateUser(ctx, models.CreateUserRequest{
 		Name:            "Test User Name",
@@ -24,7 +24,7 @@ func Test_Create(t *testing.T) {
 	})
 	require.Nil(t, err)
 
-	users, err := stage.Repository.ListUsers(ctx)
+	users, err := stage.UsersRepository.ListUsers(ctx)
 
 	require.Nil(t, err)
 	require.Len(t, users, 1)

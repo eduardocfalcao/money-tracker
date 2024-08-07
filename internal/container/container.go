@@ -1,10 +1,10 @@
 package container
 
 import (
-	"github.com/eduardocfalcao/money-tracker/database/queries"
 	"github.com/eduardocfalcao/money-tracker/internal/auth"
 	"github.com/eduardocfalcao/money-tracker/internal/users"
-	"github.com/jackc/pgx/v5"
+	"github.com/eduardocfalcao/money-tracker/internal/users/repository"
+	"github.com/jmoiron/sqlx"
 )
 
 type Container struct {
@@ -12,10 +12,11 @@ type Container struct {
 	UsersHanders         *users.Handlers
 }
 
-func NewContainer(secret string, conn *pgx.Conn) (*Container, error) {
+func NewContainer(secret string, conn *sqlx.DB) (*Container, error) {
 	jwtService := auth.NewJWTService([]byte(secret))
-	queries := queries.New(conn)
-	usersService := users.NewService(queries)
+
+	userRepository := repository.New(conn)
+	usersService := users.NewService(userRepository)
 
 	c := &Container{
 		// Db: db,

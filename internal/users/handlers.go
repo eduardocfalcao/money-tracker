@@ -27,7 +27,7 @@ func NewHandler(jwtService auth.JWTService, s *service) *Handlers {
 
 func (u *Handlers) Me(w http.ResponseWriter, r *http.Request) {
 	authHeaderParts := strings.Split(r.Header.Get("Authorization"), " ")
-	token, err := u.JWTService.ParseToken(authHeaderParts[1])
+	token, err := u.ParseToken(authHeaderParts[1])
 	if err != nil {
 		logrus.Errorf("[user handler] Error parsing the user token: %s", err)
 		api.InternalErrorResponse(w)
@@ -62,7 +62,7 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.JWTService.CreateToken(auth.CreateTokenArgs{
+	token, err := h.CreateToken(auth.CreateTokenArgs{
 		Username: user.Email,
 		Email:    user.Email,
 	})

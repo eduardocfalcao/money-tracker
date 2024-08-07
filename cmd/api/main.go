@@ -16,7 +16,8 @@ import (
 	"github.com/eduardocfalcao/money-tracker/internal/users"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/jackc/pgx/v5"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -28,13 +29,12 @@ func main() {
 	serverPort := 8080
 	router := chi.NewRouter()
 	secretKey := "secret-key" // load the key from somewhere
-	ctx := context.Background()
 
-	conn, err := pgx.Connect(ctx, "postgres://postgres:12345678a@localhost:5433/money-tracker?sslmode=disable")
+	conn, err := sqlx.Open("pgx", "postgres://postgres:12345678a@localhost:5433/money-tracker?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer conn.Close(ctx)
+	defer conn.Close()
 
 	c, err := container.NewContainer(secretKey, conn)
 	if err != nil {

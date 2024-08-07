@@ -19,8 +19,8 @@ type RawTransaction struct {
 	ID                int32            `db:"id" json:"id"`
 	UserID            int32            `db:"user_id" json:"userId"`
 	AccountID         pgtype.Text      `db:"account_id" json:"accountId"`
-	DatePosted        pgtype.Timestamp `db:"date_posted" json:"datePosted"`
-	TransactionAmount pgtype.Numeric   `db:"transaction_amount" json:"transactionAmount"`
+	DatePosted        pgtype.Timestamp `db:"date_posted" json:"date_posted"`
+	TransactionAmount pgtype.Numeric   `db:"transaction_amount" json:"transaction_amount"`
 	FitID             pgtype.Int4      `db:"fit_id" json:"fitId"`
 	Checknum          pgtype.Text      `db:"checknum" json:"checknum"`
 	Memo              pgtype.Text      `db:"memo" json:"memo"`
